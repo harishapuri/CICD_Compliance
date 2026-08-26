@@ -1,0 +1,58 @@
+"""CRC CI gate: Checkov JSON → unified orchestrator → go / wait / stop.
+
+Shadow by default. `--enforce` exits 2 on BLOCK so CI can fail the job.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from cicd.bootstrap import UNIFIED_ROOT  # noqa: F401 — puts framework on sys.path
+
+from framework.orchestrator import Orchestrator
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="CRC plane: Checkov → unified CRC+ZeroGuard+InfraAgent gate."
+    )
+    parser.add_argument("checkov_json", type=Path)
+    parser.add_argument("--telemetry", type=Path, default=None)
+    parser.add_argument("--service", default="cicd")
+    parser.add_argument("--autonomy", type=int, default=2, choices=(0, 1, 2, 3))
+    parser.add_argument("--enforce", action="store_true")
+    parser.add_argument("--audit", type=Path, default=None)
+    parser.add_argument(
+        "--focus",
+        action="store_true",
+        help="Print only CRC scores plus the fused decision.",
+    )
+    args = parser.parse_args(argv)
+
+    result = Orchestrator(args.audit).run(
+        args.checkov_json,
+        args.telemetry,
+        autonomy=args.autonomy,
+        shadow=not args.enforce,
+        service=args.service,
+    )
+    if args.focus:
+        payload = {
+            "plane": "crc",
+            "crc": result["crc"],
+            "decision": result["governance"]["decision"],
+            "shadow": result["governance"]["shadow"],
+        }
+        print(json.dumps(payload, indent=2))
+    else:
+        print(json.dumps(result, indent=2))
+    if args.enforce and result["governance"]["decision"]["dsa"] == "BLOCK":
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

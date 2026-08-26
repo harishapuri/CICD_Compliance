@@ -13,6 +13,23 @@ Sibling products: [`infra`](../infra) (stay-up) and [`zeroguard`](../zeroguard) 
 
 It does **not** auto-apply patches. Autonomy default is α2: audit, annotate, block high/critical.
 
+## Demo and automation
+
+Same stories as the unified framework demo: click one, or play them all. The page streams the **real** pipeline (not a precomputed blob). Headless CI uses the same catalog.
+
+```bash
+cd CICD
+python3 -m cicd.demo          # http://127.0.0.1:8871/
+python3 -m cicd.automate      # all 7 stories, exit 1 if a pick drifts
+```
+
+| Story | Expected pick |
+| --- | --- |
+| All clear | Go (`ALLOW`) |
+| Almost full / errors rising | Wait (`WARN`) |
+| Unsafe setup / open door | Stop (`BLOCK_DEPLOYMENT`) |
+| Safe setup, bad traffic / site down | Undo (`ROLLBACK`) |
+
 ## Run
 
 ```bash
@@ -46,13 +63,14 @@ Otherwise the vendored copy is used. A sibling `../unified_framework` wins over 
 ## Tests
 
 ```bash
-python3 -m unittest tests.test_cicd -v
+python3 -m unittest tests.test_cicd tests.test_automate -v
 ```
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
-| `cicd/` | CRC CLI wrapping the unified orchestrator |
+| `cicd/` | CRC CLI, browser demo, headless automate |
+| `demo/static/` | Autoplay UI (SSE) |
 | `vendor/unified_framework/` | Shared bus, audit, ingest, three planes, gate |
-| `.github/workflows/gate.yml` | Shadow gate on push |
+| `.github/workflows/gate.yml` | Tests + automate + shadow gate |

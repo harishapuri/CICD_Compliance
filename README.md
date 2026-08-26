@@ -18,6 +18,7 @@ cd infraagent
 | Repo | Plane |
 | --- | --- |
 | [unifiedframework](https://github.com/harishapuri/unifiedframework) | Fused CRC × ZeroGuard × InfraAgent gate (source of `vendor/unified_framework`) |
+| [MAWS](https://github.com/harishapuri/MAWS) | Hive orchestrator (named agents, stay-on-blue) |
 | [CICD_Compliance](https://github.com/harishapuri/CICD_Compliance) | Stay-up / rollout (InfraAgent Ω) |
 | [ZeroGuard](https://github.com/harishapuri/ZeroGuard) | Trust / ZTA (Ψ) |
 

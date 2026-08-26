@@ -1,8 +1,33 @@
-# CICD — CRC plane
+# InfraAgent — CRC / CI-CD gate
 
-Compliance-driven CI/CD gate (paper 207) as its **own repo**. Scoring still runs through the **unified framework**: CRC η, ZeroGuard Ψ, and InfraAgent Ω share one bus and one go / wait / stop.
+GitHub: [harishapuri/infraagent](https://github.com/harishapuri/infraagent)
 
-Sibling products: [`infra`](../infra) (stay-up) and [`zeroguard`](../zeroguard) (trust). Shared library: [`unified_framework`](../unified_framework). A snapshot lives in `vendor/unified_framework` so this repo runs alone.
+Compliance-driven CI/CD (CRC, paper 207). A Checkov JSON scan plus optional telemetry go in. This repo **focuses** the fused pick on rules: η, residual-high, and critical IaC. The shared library still scores ZeroGuard Ψ and InfraAgent Ω on one bus, then one DSA pick: go / wait / stop.
+
+It does **not** auto-apply patches. Autonomy default is α2: audit, annotate, block high/critical.
+
+Python module name after clone is `cicd` (not the GitHub folder name).
+
+```bash
+git clone https://github.com/harishapuri/infraagent.git
+cd infraagent
+```
+
+## Related repos
+
+| Repo | Plane |
+| --- | --- |
+| [unifiedframework](https://github.com/harishapuri/unifiedframework) | Fused CRC × ZeroGuard × InfraAgent gate (source of `vendor/unified_framework`) |
+| [CICD_Compliance](https://github.com/harishapuri/CICD_Compliance) | Stay-up / rollout (InfraAgent Ω) |
+| [ZeroGuard](https://github.com/harishapuri/ZeroGuard) | Trust / ZTA (Ψ) |
+
+This repo runs alone via `vendor/unified_framework`. To use a live checkout instead:
+
+```bash
+export UNIFIED_FRAMEWORK=/path/to/unifiedframework
+```
+
+A sibling folder named `unified_framework` (same parent directory) wins over vendor.
 
 ## What this repo owns
 
@@ -11,16 +36,13 @@ Sibling products: [`infra`](../infra) (stay-up) and [`zeroguard`](../zeroguard) 
 - Shadow vs `--enforce` for GitHub Actions
 - Focused CRC view (`--focus`) on top of the fused decision
 
-It does **not** auto-apply patches. Autonomy default is α2: audit, annotate, block high/critical.
-
 ## Demo and automation
 
-Same stories as the unified framework demo: click one, or play them all. The page streams the **real** pipeline (not a precomputed blob). Headless CI uses the same catalog.
+The page streams the **real** pipeline (not a precomputed blob). Headless CI uses the same seven stories.
 
 ```bash
-cd CICD
 python3 -m cicd.demo          # http://127.0.0.1:8871/
-python3 -m cicd.automate      # all 7 stories, exit 1 if a pick drifts
+python3 -m cicd.automate      # exit 1 if a pick drifts
 ```
 
 | Story | Expected pick |
@@ -30,10 +52,9 @@ python3 -m cicd.automate      # all 7 stories, exit 1 if a pick drifts
 | Unsafe setup / open door | Stop (`BLOCK_DEPLOYMENT`) |
 | Safe setup, bad traffic / site down | Undo (`ROLLBACK`) |
 
-## Run
+## CLI
 
 ```bash
-cd CICD
 python3 -m cicd vendor/unified_framework/examples/checkov_fail.json \
   --telemetry vendor/unified_framework/examples/telemetry_hot.json \
   --focus
@@ -52,19 +73,13 @@ python3 -m cicd /tmp/checkov.json --telemetry /tmp/metrics.json --enforce
 
 `--enforce` exits `2` on BLOCK. Default is shadow (exit 0) until a scorecard on real releases is ready.
 
-Prefer a live checkout of the shared library:
-
-```bash
-export UNIFIED_FRAMEWORK=/path/to/unified_framework
-```
-
-Otherwise the vendored copy is used. A sibling `../unified_framework` wins over vendor.
-
-## Tests
+## Tests and CI
 
 ```bash
 python3 -m unittest tests.test_cicd tests.test_automate -v
 ```
+
+`.github/workflows/gate.yml` runs unit tests, `python3 -m cicd.automate`, and a shadow pass fixture on every push and pull request.
 
 ## Layout
 

@@ -1,6 +1,6 @@
-# InfraAgent — CRC / CI-CD gate
+# CICD_Compliance — CRC / CI-CD gate
 
-GitHub: [harishapuri/infraagent](https://github.com/harishapuri/infraagent)
+GitHub: [harishapuri/CICD_Compliance](https://github.com/harishapuri/CICD_Compliance)
 
 Compliance-driven CI/CD (CRC, paper 207). A Checkov JSON scan plus optional telemetry go in. This repo **focuses** the fused pick on rules: η, residual-high, and critical IaC. The shared library still scores ZeroGuard Ψ and InfraAgent Ω on one bus, then one DSA pick: go / wait / stop.
 
@@ -9,8 +9,8 @@ It does **not** auto-apply patches. Autonomy default is α2: audit, annotate, bl
 Python module name after clone is `cicd` (not the GitHub folder name).
 
 ```bash
-git clone https://github.com/harishapuri/infraagent.git
-cd infraagent
+git clone https://github.com/harishapuri/CICD_Compliance.git
+cd CICD_Compliance
 ```
 
 ## Related repos
@@ -19,7 +19,7 @@ cd infraagent
 | --- | --- |
 | [unifiedframework](https://github.com/harishapuri/unifiedframework) | Fused CRC × ZeroGuard × InfraAgent gate (source of `vendor/unified_framework`) |
 | [MAWS](https://github.com/harishapuri/MAWS) | Hive orchestrator (named agents, stay-on-blue) |
-| [CICD_Compliance](https://github.com/harishapuri/CICD_Compliance) | Stay-up / rollout (InfraAgent Ω) |
+| [infraagent](https://github.com/harishapuri/infraagent) | Stay-up / rollout (InfraAgent Ω) |
 | [ZeroGuard](https://github.com/harishapuri/ZeroGuard) | Trust / ZTA (Ψ) |
 
 This repo runs alone via `vendor/unified_framework`. To use a live checkout instead:

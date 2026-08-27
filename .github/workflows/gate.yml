@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Unit tests
-        run: python3 -m unittest tests.test_cicd tests.test_automate -v
+        run: python3 -m unittest tests.test_cicd tests.test_automate tests.test_scan -v
       - name: Automate all demo stories
         run: python3 -m cicd.automate
       - name: Shadow pass fixture

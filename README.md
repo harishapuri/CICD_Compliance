@@ -35,6 +35,7 @@ Full figures: [ARCHITECTURE.md](ARCHITECTURE.md). Industry comparison: [INDUSTRY
 ## What this repo owns
 
 - Checkov JSON ingest as the CI control set
+- Clone a git repo from `scan_target.placeholder.json` and scan it
 - CRC η = passed / total, residual-high, critical IaC
 - Shadow vs `--enforce` for GitHub Actions
 - Focused CRC view (`--focus`) on top of the fused decision
@@ -67,19 +68,28 @@ python3 -m cicd vendor/unified_framework/examples/checkov_pass.json \
   --service checkout-api
 ```
 
-Your scan:
+Your scan from a git repo — fill the placeholder, then run:
+
+```bash
+# scan_target.placeholder.json
+# { "git_url": "https://github.com/YOUR_ORG/YOUR_REPO.git", "ref": "main", "path": ".", "telemetry": null }
+
+python3 -m cicd --scan scan_target.placeholder.json --enforce
+```
+
+`git_url` may be an https clone URL or a local path. The gate clones the repo, runs `checkov -d <path> -o json` if Checkov is installed, or uses a `checkov.json` already in that repo. `--enforce` exits `2` on BLOCK. Default is shadow (exit 0) until a scorecard on real releases is ready.
+
+A scan file you already have:
 
 ```bash
 checkov -d infra/ -o json > /tmp/checkov.json
 python3 -m cicd /tmp/checkov.json --telemetry /tmp/metrics.json --enforce
 ```
 
-`--enforce` exits `2` on BLOCK. Default is shadow (exit 0) until a scorecard on real releases is ready.
-
 ## Tests and CI
 
 ```bash
-python3 -m unittest tests.test_cicd tests.test_automate -v
+python3 -m unittest tests.test_cicd tests.test_automate tests.test_scan -v
 ```
 
 `.github/workflows/gate.yml` runs unit tests, `python3 -m cicd.automate`, and a shadow pass fixture on every push and pull request.

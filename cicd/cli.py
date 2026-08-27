@@ -12,14 +12,26 @@ from pathlib import Path
 
 from cicd.bootstrap import UNIFIED_ROOT  # noqa: F401 — puts framework on sys.path
 
+from framework.ingest.git_scan import ScanTargetError, clone_and_scan, load_scan_target
 from framework.orchestrator import Orchestrator
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="CRC plane: Checkov → unified CRC+ZeroGuard+InfraAgent gate."
+        description="CRC plane: git repo or Checkov JSON → unified CRC+ZeroGuard+InfraAgent gate."
     )
-    parser.add_argument("checkov_json", type=Path)
+    parser.add_argument(
+        "checkov_json",
+        type=Path,
+        nargs="?",
+        help="Existing `checkov -o json` file. Omit when using --scan.",
+    )
+    parser.add_argument(
+        "--scan",
+        type=Path,
+        default=None,
+        help="Placeholder JSON with git_url (see scan_target.placeholder.json).",
+    )
     parser.add_argument("--telemetry", type=Path, default=None)
     parser.add_argument("--service", default="cicd")
     parser.add_argument("--autonomy", type=int, default=2, choices=(0, 1, 2, 3))
@@ -32,9 +44,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    checkov_json = args.checkov_json
+    telemetry = args.telemetry
+    if args.scan:
+        try:
+            target = load_scan_target(args.scan)
+            checkov_json, scanned_telemetry = clone_and_scan(target)
+        except ScanTargetError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        telemetry = telemetry or scanned_telemetry
+    elif checkov_json is None:
+        parser.error("pass a Checkov JSON path, or --scan scan_target.placeholder.json")
+
     result = Orchestrator(args.audit).run(
-        args.checkov_json,
-        args.telemetry,
+        checkov_json,
+        telemetry,
         autonomy=args.autonomy,
         shadow=not args.enforce,
         service=args.service,

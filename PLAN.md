@@ -1,12 +1,12 @@
 # Plan — CRC / CI-CD plane
 
-GitHub: [harishapuri/CICD_Compliance](https://github.com/harishapuri/CICD_Compliance)
+GitHub: [harishapuri/infraagent](https://github.com/harishapuri/infraagent)
 
 Implementation plan for the **CRC (207)** plane as its own product, still fused with ZeroGuard and InfraAgent.
 
 1. **CRC (207)** — this repo: compliance-driven CI/CD gate
 2. **ZeroGuard (2143)** — [ZeroGuard](https://github.com/harishapuri/ZeroGuard)
-3. **InfraAgent (1239)** — [infraagent](https://github.com/harishapuri/infraagent)
+3. **InfraAgent (1239)** — [CICD_Compliance](https://github.com/harishapuri/CICD_Compliance)
 
 Shared library: [unifiedframework](https://github.com/harishapuri/unifiedframework), vendored at `vendor/unified_framework`.
 

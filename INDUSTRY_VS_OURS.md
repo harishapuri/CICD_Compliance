@@ -1,6 +1,6 @@
 # Industry deploy vs our CRC / CI-CD gate
 
-GitHub: [harishapuri/CICD_Compliance](https://github.com/harishapuri/CICD_Compliance)
+GitHub: [harishapuri/infraagent](https://github.com/harishapuri/infraagent)
 
 **Northstar Bank** still ships a chatbot with **blue** (customers now) and **green** (empty new copy). This repo is the **rules** plane: did Checkov find trouble in setup, image, or IaC?
 

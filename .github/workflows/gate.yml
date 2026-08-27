@@ -17,7 +17,16 @@ jobs:
       - name: Automate all demo stories
         run: python3 -m cicd.automate
       - name: Shadow pass fixture
+        env:
+          GATE_ACTOR: ${{ github.actor }}
         run: |
           python3 -m cicd vendor/unified_framework/examples/checkov_pass.json \
             --telemetry vendor/unified_framework/examples/telemetry_ok.json \
+            --merge-sarif vendor/unified_framework/examples/sarif_sample.json \
+            --export-evidence artifacts/evidence \
+            --traffic-intent artifacts/traffic \
             --service ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gate-evidence
+          path: artifacts/

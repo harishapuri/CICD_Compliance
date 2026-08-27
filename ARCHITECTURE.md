@@ -11,16 +11,18 @@ Sibling planes: [infraagent](https://github.com/harishapuri/infraagent) (stay-up
 ## This repo in the loop
 
 ```
-Checkov JSON + optional telemetry
+Git URL / Checkov JSON / SARIF / Trivy + optional telemetry
                 ↓
-Ingest (vendor/unified_framework)
+Ingest (vendor/unified_framework: checkov, git_scan, scanners)
                 ↓
 CRC η, residual-high, critical IaC   ← this plane
 ZeroGuard Ψ · InfraAgent Ω           ← still computed
                 ↓
-Typed bus → DSA go / wait / stop
+MAWS hive → typed bus → DSA go / wait / stop
                 ↓
-SHA-256 audit · suggest only · shadow unless --enforce
+SHA-256 audit · actor stamp · evidence export
+traffic intent (hold/canary/promote, apply false)
+suggest only · shadow unless --enforce
 ```
 
 Customers (or production traffic) move **only after** go. This plane does not auto-apply patches.
@@ -30,16 +32,18 @@ Customers (or production traffic) move **only after** go. This plane does not au
 ```mermaid
 flowchart TB
   subgraph UPSTREAM
-    SRC[Commit]
-    IMG[Image]
-    IAC[IaC]
+    GIT[Git repo clone]
+    CKV[Checkov JSON]
+    SARIF[SARIF]
+    TRIVY[Trivy]
     TEL[Runtime]
     DEM[Demand]
   end
 
-  SRC --> IN[Ingest mapper]
-  IMG --> IN
-  IAC --> IN
+  GIT --> IN[IngestAgent]
+  CKV --> IN
+  SARIF --> IN
+  TRIVY --> IN
   TEL --> IN
   DEM --> IN
 
@@ -73,6 +77,9 @@ flowchart TB
   BLUE --> AUD[SHA-256 audit]
   HOLD --> AUD
   GREEN --> AUD
+  AUD --> CORP[Corp adapters]
+  CORP --> INT[Traffic intent apply false]
+  CORP --> EV[Evidence export]
 ```
 
 ## CRC complete flow (paper 207)
